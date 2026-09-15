@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dispatch — AI Email Generator</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', path='style.css') }}">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap"
+          rel="stylesheet">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- LEFT PANEL -->
+    <aside class="sidebar">
+
+        <div class="sidebar-inner">
+
+            <!-- Brand -->
+            <div class="brand">
+                <div class="brand-icon">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <rect x="2.5" y="5" width="19" height="14"
+                              rx="1.5"
+                              stroke="currentColor"
+                              stroke-width="1.4"/>
+                        <path d="M3 6L12 13L21 6"
+                              stroke="currentColor"
+                              stroke-width="1.4"/>
+                    </svg>
+                </div>
+
+                <span>Dispatch</span>
+            </div>
+
+            <p class="tagline">
+                A desk for writing better email
+            </p>
+
+
+            <!-- Recipient -->
+            <div class="field-group">
+
+                <label for="recipient">
+                    Who is this going to?
+                </label>
+
+                <input
+                    type="text"
+                    id="recipient"
+                    placeholder="e.g. Sarah Ahmed"
+                    maxlength="100"
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <!-- Purpose -->
+            <div class="field-group purpose-group">
+
+                <label for="purpose">
+                    What do they need to know?
+                </label>
+
+                <div class="textarea-wrapper">
+
+                    <textarea
+                        id="purpose"
+                        maxlength="1000"
+                        placeholder="e.g. Let them know the design files are delayed until Thursday and ask if that still works for their timeline."
+                    ></textarea>
+
+                    <span id="counter">0/1000</span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Tone -->
+            <div class="tone-section">
+
+                <label class="tone-label">
+                    Choose a tone
+                </label>
+
+                <div class="tone-options">
+
+                    <!-- Professional -->
+                    <button
+                        type="button"
+                        class="tone-card active"
+                        data-tone="Professional"
+                    >
+                        <span class="tone-star">✦</span>
+
+                        <div class="tone-content">
+                            <strong>Professional</strong>
+                            <small>Clear & measured</small>
+                        </div>
+                    </button>
+
+
+                    <!-- Friendly -->
+                    <button
+                        type="button"
+                        class="tone-card"
+                        data-tone="Friendly"
+                    >
+                        <span class="tone-star">✦</span>
+
+                        <div class="tone-content">
+                            <strong>Friendly</strong>
+                            <small>Warm & easy</small>
+                        </div>
+                    </button>
+
+
+                    <!-- Formal -->
+                    <button
+                        type="button"
+                        class="tone-card"
+                        data-tone="Formal"
+                    >
+                        <span class="tone-star">✦</span>
+
+                        <div class="tone-content">
+                            <strong>Formal</strong>
+                            <small>Precise & reserved</small>
+                        </div>
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- Generate -->
+            <button
+                type="button"
+                id="generateBtn"
+                class="generate-btn"
+            >
+
+                <span class="generate-text">
+                    Compose the email
+                </span>
+
+                <span class="generate-arrow">→</span>
+
+                <span class="spinner"></span>
+
+            </button>
+
+
+            <!-- Footer -->
+            <div class="sidebar-footer">
+
+                <span></span>
+
+                <p>
+                    Made with <b>♡</b> for better communication
+                </p>
+
+                <span></span>
+
+            </div>
+
+        </div>
+
+        <!-- Decorative leaves -->
+        <div class="leaf-decoration left-leaves">
+            <span>⌁</span>
+            <span>⌁</span>
+            <span>⌁</span>
+        </div>
+
+    </aside>
+
+
+
+    <!-- RIGHT PANEL -->
+    <main class="preview-area">
+
+        <div class="preview-card">
+
+            <!-- Preview Header -->
+            <div class="preview-header">
+
+                <div>
+                    <span class="preview-label">
+                        Generated Email
+                    </span>
+                </div>
+
+                <!-- Date stamp -->
+                <div class="date-stamp">
+
+                    <div class="stamp-tone">
+                        <span id="stampTone">Professional</span>
+                    </div>
+
+                    <span id="currentDate">
+                        Sep 15, 2026
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            <!-- Divider -->
+            <div class="preview-divider"></div>
+
+
+            <!-- Empty State -->
+            <div
+                id="emptyState"
+                class="empty-state"
+            >
+
+                <div class="empty-icon">
+                    ✦
+                </div>
+
+                <h2>Your email will appear here.</h2>
+
+                <p>
+                    Add a recipient and describe what you need
+                    to say. Dispatch will craft the rest.
+                </p>
+
+            </div>
+
+
+            <!-- Loading -->
+            <div
+                id="loadingState"
+                class="loading-state hidden"
+            >
+
+                <div class="loader"></div>
+
+                <h3>Composing your email...</h3>
+
+                <p>
+                    Gemini is finding the right words.
+                </p>
+
+            </div>
+
+
+            <!-- Generated Email -->
+            <article
+                id="emailResult"
+                class="email-result hidden"
+            >
+
+                <!-- Subject -->
+                <div class="subject-block">
+
+                    <span class="subject-label">
+                        Subject
+                    </span>
+
+                    <h1 id="emailSubject">
+                        Quick update on the design files
+                    </h1>
+
+                </div>
+
+
+                <!-- Email Body -->
+                <div
+                    id="emailBody"
+                    class="email-body"
+                >
+                    <p>
+                        Hi Priya,
+                    </p>
+
+                    <p>
+                        Wanted to give you a heads up before you plan
+                        the rest of the week. The design files are
+                        running a little behind and will now be ready
+                        by Thursday instead of tomorrow.
+                    </p>
+
+                    <p>
+                        Let me know if that shifts anything on your
+                        end, and I'll adjust if needed.
+                    </p>
+
+                    <p>
+                        Best regards,<br>
+                        Arjun
+                    </p>
+
+                </div>
+
+
+                <!-- Actions -->
+                <div class="email-actions">
+
+                    <button
+                        type="button"
+                        id="copyBtn"
+                        class="action-btn"
+                    >
+                        <span>Copy email</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        id="newBtn"
+                        class="action-btn secondary"
+                    >
+                        <span>Write it again</span>
+                    </button>
+
+                </div>
+
+            </article>
+
+
+            <!-- Error -->
+            <div
+                id="errorState"
+                class="error-state hidden"
+            >
+
+                <div class="error-icon">
+                    !
+                </div>
+
+                <h3>Something went wrong</h3>
+
+                <p id="errorMessage">
+                    Unable to generate email.
+                </p>
+
+                <button
+                    type="button"
+                    id="retryBtn"
+                    class="retry-btn"
+                >
+                    Try again
+                </button>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
+
+
+<script src="{{ url_for('static', path='script.js') }}"></script>
+
+</body>
+</html>

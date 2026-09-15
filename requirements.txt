@@ -1,0 +1,5 @@
+fastapi
+uvicorn[standard]
+jinja2
+python-dotenv
+google-genai>=2.3.0
